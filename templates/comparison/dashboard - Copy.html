@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CIMS V10 - Comparison Dashboard</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        :root {
+            --bg: #030807;
+            --panel: #0b1111;
+            --panel-2: #101818;
+            --line: #243332;
+            --green: #75f049;
+            --green-2: #39b628;
+            --soft: #aebbb7;
+            --white: #f4f8f6;
+            --red: #ff3636;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: 
+                radial-gradient(circle at 38% 4%, rgba(101, 240, 73, 0.12), transparent 24%),
+                linear-gradient(145deg, #020504, #091111 44%, #020605);
+            color: var(--white);
+            font-family: 'Poppins', Arial, sans-serif;
+            overflow: hidden;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        /* =========================
+           LAYOUT
+           ========================= */
+        .shell {
+            display: grid;
+            grid-template-columns: 240px minmax(0, 1fr);
+            height: 100vh;
+        }
+
+        .sidebar {
+            position: relative;
+            height: 100vh;
+            padding: 18px;
+            border-right: 1px solid var(--line);
+            background: linear-gradient(180deg, rgba(5, 13, 13, 0.98), rgba(2, 6, 7, 0.98));
+        }
+
+        .main {
+            padding: 10px;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .dashboard {
+            min-height: calc(100vh - 28px);
+            border: 1px solid #33413f;
+            border-radius: 18px;
+            padding: 16px;
+            background: rgba(6, 12, 13, 0.75);
+        }
+
+        /* =========================
+           BRAND & SIDEBAR
+           ========================= */
+        .brand {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            padding: 8px 8px 24px;
+        }
+
+        .seal {
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            background: radial-gradient(circle, #123b16, #07110b 64%);
+            border: 2px solid #1f7c29;
+            font-size: 28px;
+        }
+
+        .brand h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 800;
+        }
+
+        .brand p {
+            margin: 6px 0 0;
+            color: var(--green);
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .nav {
+            display: grid;
+            gap: 10px;
+        }
+
+        .nav a {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 14px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .nav a:hover,
+        .nav a.active {
+            background: linear-gradient(90deg, #176b18, #10470f);
+        }
+
+        .nav .ico {
+            width: 28px;
+            text-align: center;
+            color: var(--green);
+            font-size: 22px;
+        }
+
+        .agency {
+            position: absolute;
+            left: 18px;
+            right: 18px;
+            bottom: 20px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            padding-top: 18px;
+            border-top: 1px solid var(--line);
+            font-size: 12px;
+        }
+
+        .agency strong {
+            display: block;
+        }
+
+        .agency span {
+            display: block;
+            color: var(--green);
+            font-weight: 700;
+        }
+
+        /* =========================
+           TOP HEADER
+           ========================= */
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 18px;
+            padding: 4px 12px 20px;
+            border-bottom: 1px solid #1e2b2a;
+        }
+
+        .title h2 {
+            margin: 0;
+            font-size: 29px;
+            font-weight: 800;
+        }
+
+        .title p {
+            margin: 7px 0 0;
+            color: var(--green);
+            font-weight: 700;
+            font-size: 17px;
+        }
+
+        .updated {
+            font-weight: 700;
+        }
+
+        .updated small {
+            display: block;
+            color: var(--green);
+        }
+
+        /* =========================
+           PANELS & TABLES
+           ========================= */
+        .panel {
+            background: linear-gradient(145deg, rgba(14, 22, 22, 0.98), rgba(5, 10, 11, 0.98));
+            border: 1px solid #243332;
+            border-radius: 14px;
+            padding: 18px;
+            margin-top: 18px;
+            overflow: hidden;
+        }
+
+        .panel-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .panel-title h3 {
+            margin: 0;
+            color: var(--green);
+            font-size: 18px;
+        }
+
+        .panel-title span {
+            color: var(--soft);
+            font-size: 13px;
+        }
+
+        .table-wrap {
+            width: 100%;
+            overflow-x: auto;
+            overflow-y: auto;
+            max-height: 550px;
+            border: 1px solid #243332;
+            border-radius: 8px;
+        }
+
+        .comparison-table {
+            width: 100%;
+            min-width: 1400px;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 13px;
+        }
+
+        .comparison-table th {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background: #0c1717;
+            color: var(--green);
+            padding: 12px 8px;
+            border-bottom: 2px solid #355044;
+            border-right: 1px solid #263837;
+            text-align: center;
+        }
+
+        .comparison-table td {
+            background: #0b1313;
+            color: white;
+            padding: 12px 8px;
+            border-bottom: 1px solid #1c2a29;
+            border-right: 1px solid #1c2a29;
+            text-align: center;
+        }
+
+        .comparison-table tbody tr:hover td {
+            background: #121e1e;
+        }
+
+        .group-divider {
+            border-left: 3px solid var(--green) !important;
+        }
+
+        .delta {
+            font-weight: 700;
+        }
+
+        .increase {
+            color: var(--green);
+        }
+
+        .decrease {
+            color: var(--red);
+        }
+
+        .neutral {
+            color: var(--soft);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="shell">
+        <!-- =========================
+             SIDEBAR
+             ========================= -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="seal">🌾</div>
+                <div>
+                    <h1>CIMS V10</h1>
+                    <p>RICE PROGRAM</p>
+                </div>
+            </div>
+
+            <nav class="nav">
+                <a href="/"><span class="ico">⌂</span> Dashboard</a>
+                <a href="/wet/municipality/"><span class="ico">☔</span> Wet Season 2026</a>
+                <a href="/dry/municipality/"><span class="ico">☀️</span> Dry Season 2027</a>
+                <a href="/comparison" class="active"><span class="ico">⇄</span> Comparison</a>
+                <a href="#"><span class="ico">▤</span> Reports</a>
+                <a href="/settings"><span class="ico">⚙</span> Settings</a>
+            </nav>
+
+            <div class="agency">
+                <div class="seal">🌾</div>
+                <div>
+                    <strong>DEPARTMENT OF AGRICULTURE PHILIPPINES</strong>
+                    <span>RICE PROGRAM</span>
+                    <br>Masaganang Agrikultura,<br>Maunlad na Ekonomiya
+                </div>
+            </div>
+        </aside>
+
+        <!-- =========================
+             MAIN CONTENT
+             ========================= -->
+        <main class="main">
+            <section class="dashboard">
+                
+                <!-- TOP HEADER -->
+                <header class="topbar">
+                    <div class="title">
+                        <h2>COMPARISON DASHBOARD</h2>
+                        <p>Wet Season 2026 vs Dry Season 2027</p>
+                    </div>
+                    <div class="updated">
+                        Last Updated:
+                        <small>{{ updated_at or 'N/A' }}</small>
+                    </div>
+                </header>
+
+                <!-- =========================
+                     MUNICIPALITY COMPARISON
+                     ========================= -->
+                <section class="panel">
+                    <div class="panel-title">
+                        <h3>📊 MUNICIPALITY COMPARISON</h3>
+                        <span>Wet 2026 vs Dry 2027</span>
+                    </div>
+
+                    <div class="table-wrap">
+                        <table class="comparison-table">
+                            <thead>
+                                <tr>
+                                    <th rowspan="2">#</th>
+                                    <th rowspan="2">Municipality</th>
+                                    <th colspan="2" class="group-divider">Associations</th>
+                                    <th colspan="2" class="group-divider">Farmers</th>
+                                    <th colspan="2" class="group-divider">Area (ha)</th>
+                                    <th colspan="2" class="group-divider">Production (MT)</th>
+                                    <th colspan="2" class="group-divider">Yield (MT/ha)</th>
+                                    <th rowspan="2" class="group-divider">Status</th>
+                                </tr>
+                                <tr>
+                                    <th class="group-divider">2026 (Wet)</th>
+                                    <th>2027 (Dry)</th>
+                                    <th class="group-divider">2026 (Wet)</th>
+                                    <th>2027 (Dry)</th>
+                                    <th class="group-divider">2026 (Wet)</th>
+                                    <th>2027 (Dry)</th>
+                                    <th class="group-divider">2026 (Wet)</th>
+                                    <th>2027 (Dry)</th>
+                                    <th class="group-divider">2026 (Wet)</th>
+                                    <th>2027 (Dry)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for row in municipality_rows %}
+                                <tr>
+                                    <td>{{ loop.index }}</td>
+                                    <td style="text-align: left; font-weight: 600;">{{ row.municipality }}</td>
+                                    
+                                    <!-- Associations -->
+                                    <td class="group-divider">{{ "%d"|format(row.wet_assoc or 0) }}</td>
+                                    <td>{{ "%d"|format(row.dry_assoc or 0) }}</td>
+
+                                    <!-- Farmers -->
+                                    <td class="group-divider">{{ "%d"|format(row.wet_farmers or 0) }}</td>
+                                    <td>{{ "%d"|format(row.dry_farmers or 0) }}</td>
+
+                                    <!-- Area -->
+                                    <td class="group-divider">{{ "%.2f"|format(row.wet_area or 0) }}</td>
+                                    <td>{{ "%.2f"|format(row.dry_area or 0) }}</td>
+
+                                    <!-- Production -->
+                                    <td class="group-divider">{{ "%.2f"|format(row.wet_mt or 0) }}</td>
+                                    <td>{{ "%.2f"|format(row.dry_mt or 0) }}</td>
+
+                                    <!-- Yield (Wet 2026) -->
+                                    <td class="group-divider">
+                                        {% if row.wet_area and row.wet_area > 0 %}
+                                            {{ "%.2f"|format((row.wet_mt or 0) / row.wet_area) }}
+                                        {% else %}
+                                            0.00
+                                        {% endif %}
+                                    </td>
+
+                                    <!-- Yield (Dry 2027) -->
+                                    <td>
+                                        {% if row.dry_area and row.dry_area > 0 %}
+                                            {{ "%.2f"|format((row.dry_mt or 0) / row.dry_area) }}
+                                        {% else %}
+                                            0.00
+                                        {% endif %}
+                                    </td>
+
+                                    <!-- Status / Change -->
+                                    <td class="group-divider">
+                                        {% if row.change is not none and row.change != '' %}
+                                            {% if row.change > 0 %}
+                                                <span class="delta increase">▲ {{ "%.2f"|format(row.change) }}%</span>
+                                            {% elif row.change < 0 %}
+                                                <span class="delta decrease">▼ {{ "%.2f"|format(row.change) }}%</span>
+                                            {% else %}
+                                                <span class="delta neutral">▬ 0%</span>
+                                            {% endif %}
+                                        {% else %}
+                                            <span class="delta neutral">N/A</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="13" class="text-center neutral">No municipality comparison data available.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- =========================
+                     ASSOCIATION COMPARISON
+                     ========================= -->
+                <section class="panel">
+                    <div class="panel-title">
+                        <h3>🏢 ASSOCIATION COMPARISON</h3>
+                        <span>Wet Season 2026 vs Dry Season 2027</span>
+                    </div>
+
+                    {% for municipality in association_rows | groupby("municipality") %}
+                    <h3 style="margin-top: 25px; margin-bottom: 12px; color: var(--green); border-bottom: 2px solid var(--line); padding-bottom: 8px;">
+                        📍 {{ municipality.grouper }}
+                    </h3>
+
+                    <div class="table-wrap mb-4">
+                        <table class="comparison-table">
+                            <thead>
+                                <tr>
+                                    <th rowspan="2">Municipality</th>
+                                    <th rowspan="2">Association (Wet 2026)</th>
+                                    <th rowspan="2">Association (Dry 2027)</th>
+                                    <th colspan="2" class="group-divider">Area (ha)</th>
+                                    <th colspan="2" class="group-divider">Ave MT/ha</th>
+                                    <th colspan="2" class="group-divider">Number of Farmers</th>
+                                </tr>
+                                <tr>
+                                    <th class="group-divider">2026 (Wet)</th>
+                                    <th>2027 (Dry)</th>
+                                    <th class="group-divider">2026 (Wet)</th>
+                                    <th>2027 (Dry)</th>
+                                    <th class="group-divider">2026 (Wet)</th>
+                                    <th>2027 (Dry)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for row in municipality.list %}
+                                <tr>
+                                    <td style="text-align: left;">{{ row.municipality }}</td>
+                                    <td style="text-align: left;">{{ row.wet_association or "-" }}</td>
+                                    <td style="text-align: left;">{{ row.dry_association or "-" }}</td>
+                                    
+                                    <!-- Area -->
+                                    <td class="group-divider">{{ "%.2f"|format(row.wet_area or 0) }}</td>
+                                    <td>{{ "%.2f"|format(row.dry_area or 0) }}</td>
+
+                                    <!-- Yield -->
+                                    <td class="group-divider">{{ "%.2f"|format(row.wet_yield or 0) }}</td>
+                                    <td>{{ "%.2f"|format(row.dry_yield or 0) }}</td>
+
+                                    <!-- Farmers -->
+                                    <td class="group-divider">{{ "%d"|format(row.wet_farmers or 0) }}</td>
+                                    <td>{{ "%d"|format(row.dry_farmers or 0) }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="neutral text-center">No association data available.</p>
+                    {% endfor %}
+                </section>
+
+            </section>
+        </main>
+    </div>
+</body>
+</html>

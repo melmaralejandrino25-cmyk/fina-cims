@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Dry Municipality - CIMS V10</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/cims-theme.css') }}">
+</head>
+
+<body>
+{% include "partials/season_sidebar.html" %}
+
+<main class="app-content">
+    <div class="container">
+
+        <!-- Navigation Bar -->
+        <div class="top-buttons flex-between mb-4">
+            <div class="title flex-align gap-3">
+                <div class="badge">➕</div>
+                <h2>Add Dry Season Municipality</h2>
+            </div>
+            <div class="flex-align gap-2">
+                <a href="{{ url_for('dry_municipality.list_municipalities') }}" class="btn back-btn">
+                    ⬅ Back
+                </a>
+                <a href="/" class="btn back-btn">
+                    🏠 Dashboard
+                </a>
+            </div>
+        </div>
+
+        <!-- Form Card Panel -->
+        <div class="card max-w-lg">
+            <div class="card-header mb-4">
+                <h3>☀️ Municipality Entry Form</h3>
+            </div>
+
+            <form action="{{ url_for('dry_municipality.add_municipality') }}" method="POST">
+                <div class="form-group mb-4">
+                    <label for="name" class="form-label">Municipality Name</label>
+                    <input 
+                        type="text" 
+                        id="name" 
+                        name="name" 
+                        class="form-control" 
+                        placeholder="Enter municipality name..." 
+                        required 
+                        autofocus>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        💾 Save Municipality
+                    </button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</main>
+</body>
+</html>

@@ -1,0 +1,54 @@
+<aside class="app-sidebar" aria-label="Main Application Sidebar">
+    <!-- Brand Identity Section -->
+    <div class="app-brand flex-align gap-3 p-3">
+        <div class="app-seal badge" aria-hidden="true">🌾</div>
+        <div class="brand-text">
+            <h1 class="m-0 text-md font-bold leading-tight">CIMS V10</h1>
+            <p class="m-0 text-muted text-xs font-bold uppercase tracking-wide">Rice Program</p>
+        </div>
+    </div>
+
+    <!-- Navigation Menu -->
+    <nav class="app-nav flex-column gap-1" aria-label="Main navigation">
+        <a href="/" 
+           class="nav-link flex-align gap-2 {% if request.path == '/' %}active{% endif %}">
+            <span class="nav-icon" aria-hidden="true">⌂</span>
+            <span>Executive Dashboard</span>
+        </a>
+
+        <a href="{{ url_for('wet_municipality.list_municipalities') if 'wet_municipality.list_municipalities' in url_for.__globals__ else '/wet/municipality/' }}" 
+           class="nav-link flex-align gap-2 {% if request.path.startswith('/wet/') %}active{% endif %}">
+            <span class="nav-icon" aria-hidden="true">☔</span>
+            <span>Wet Season 2026</span>
+        </a>
+
+        <a href="{{ url_for('dry_municipality.list_municipalities') if 'dry_municipality.list_municipalities' in url_for.__globals__ else '/dry/municipality/' }}" 
+           class="nav-link flex-align gap-2 {% if request.path.startswith('/dry/') %}active{% endif %}">
+            <span class="nav-icon" aria-hidden="true">☀</span>
+            <span>Dry Season 2027</span>
+        </a>
+
+        <a href="/comparison" 
+           class="nav-link flex-align gap-2 {% if request.path == '/comparison' %}active{% endif %}">
+            <span class="nav-icon" aria-hidden="true">⇄</span>
+            <span>Comparison</span>
+        </a>
+
+        <a href="/settings" 
+           class="nav-link flex-align gap-2 {% if request.path.startswith('/settings') %}active{% endif %}">
+            <span class="nav-icon" aria-hidden="true">⚙</span>
+            <span>Settings</span>
+        </a>
+
+        <a href="/logout" class="nav-link flex-align gap-2 text-danger mt-2">
+            <span class="nav-icon" aria-hidden="true">🚪</span>
+            <span>Logout</span>
+        </a>
+    </nav>
+
+    <!-- Agency Footer -->
+    <div class="app-agency mt-auto p-3 border-top flex-column gap-1">
+        <strong class="text-xs uppercase font-bold text-main">Department of Agriculture</strong>
+        <span class="text-xs text-muted">Rice Program Management System</span>
+    </div>
+</aside>

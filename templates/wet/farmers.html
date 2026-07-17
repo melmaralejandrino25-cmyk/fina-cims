@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wet Farmers - {{ association.name }} - CIMS V10</title>
+
+    <!-- External Theme CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/cims-theme.css', v='10') }}">
+</head>
+
+<body class="app-layout">
+
+    <!-- Shared Navigation Partial -->
+    {% include "partials/season_sidebar.html" %}
+
+    <!-- MAIN CONTENT -->
+    <main class="app-content">
+        <div class="container flex-column gap-4">
+
+            <!-- Top Header & Navigation -->
+            <div class="topbar flex-between align-center pb-3">
+                <div class="title flex-align gap-3">
+                    <div class="badge" aria-hidden="true">🌾</div>
+                    <div>
+                        <h2 class="m-0 text-xl font-bold">
+                            🌧️ Wet Farmers — <span class="text-blue">{{ association.name }}</span>
+                        </h2>
+                        <p class="text-muted text-xs m-0">Manage farmer profiles, land area, and yield records</p>
+                    </div>
+                </div>
+
+                <div class="top-buttons flex-align gap-2">
+                    <a href="/" class="btn btn-secondary">🏠 Dashboard</a>
+                    <a href="{{ url_for('wet_municipality.list_municipalities') }}" class="btn btn-secondary">⬅ Municipalities</a>
+                    <a href="{{ url_for('wet_farmer.association_dashboard', assoc_id=association.id) }}" class="btn">
+                        📊 Association Analytics
+                    </a>
+                    <a href="{{ url_for('wet_farmer.export_farmers', assoc_id=association.id) }}" class="btn btn-success">
+                        📥 Export Excel
+                    </a>
+                </div>
+            </div>
+
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-messages flex-column gap-2">
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}" role="alert">
+                                {{ message|safe }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <!-- Upload Excel Section -->
+            <div class="card p-4">
+                <h3 class="m-0 text-md font-bold mb-1">📤 Upload Excel / CSV</h3>
+                <p class="text-muted text-xs mb-3">Select an Excel file following the standard NRP Distribution format.</p>
+
+                <form action="{{ url_for('wet_farmer.upload_excel', assoc_id=association.id) }}"
+                      method="POST"
+                      enctype="multipart/form-data"
+                      class="flex-align gap-2">
+                    <input type="file" name="file" accept=".xlsx, .csv" required class="form-control">
+                    <button class="btn btn-primary" type="submit">📤 Batch Upload</button>
+                </form>
+            </div>
+
+            <!-- Add Farmer Form -->
+            <div class="card p-4">
+                <h3 class="m-0 text-md font-bold mb-3">➕ Add New Farmer</h3>
+
+                <form method="POST" action="{{ url_for('wet_farmer.add_farmer', assoc_id=association.id) }}" class="flex-column gap-3">
+                    <div class="grid-4 gap-2">
+                        <div class="form-group">
+                            <label class="form-label font-bold text-xs uppercase text-muted">RSBSA</label>
+                            <input type="text" name="rsbsa" placeholder="RSBSA Number" class="form-control w-full" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label font-bold text-xs uppercase text-muted">Last Name</label>
+                            <input type="text" name="last_name" placeholder="Last Name" class="form-control w-full" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label font-bold text-xs uppercase text-muted">First Name</label>
+                            <input type="text" name="first_name" placeholder="First Name" class="form-control w-full" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label font-bold text-xs uppercase text-muted">Middle Name</label>
+                            <input type="text" name="middle_name" placeholder="Middle Name" class="form-control w-full">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label font-bold text-xs uppercase text-muted">Suffix</label>
+                            <input type="text" name="suffix" placeholder="Suffix (Jr, Sr)" class="form-control w-full">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label font-bold text-xs uppercase text-muted">Area (ha)</label>
+                            <input type="number" step="0.01" name="area" placeholder="Area (ha)" class="form-control w-full" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label font-bold text-xs uppercase text-muted">Variety</label>
+                            <select name="variety" class="form-control w-full" required>
+                                <option value="" disabled selected>Select Variety</option>
+                                {% for v in varieties %}
+                                    <option value="{{ v.name }}">{{ v.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label font-bold text-xs uppercase text-muted">Sacks</label>
+                            <input type="number" step="0.01" name="sacks" placeholder="Sacks Harvested" class="form-control w-full" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label font-bold text-xs uppercase text-muted">Kg / Sack</label>
+                            <input type="number" step="0.01" name="kg" placeholder="Kg per Sack" class="form-control w-full" required>
+                        </div>
+                    </div>
+
+                    <div class="form-actions border-top pt-3">
+                        <button class="btn btn-primary" type="submit">➕ Save Farmer Record</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Search Filter -->
+            <div class="search-box">
+                <form method="GET" class="flex-align gap-2">
+                    <input type="text"
+                           name="search"
+                           placeholder="🔍 Search by RSBSA, Last Name, or First Name..."
+                           value="{{ search }}"
+                           class="form-control w-full">
+
+                    <button class="btn btn-primary" type="submit">Search</button>
+                    {% if search %}
+                        <a href="{{ url_for('wet_farmer.list_farmers', assoc_id=association.id) }}" class="btn btn-secondary">Clear</a>
+                    {% endif %}
+                </form>
+            </div>
+
+            <!-- Farmers Data Table -->
+            <div class="card p-0">
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>RSBSA</th>
+                                <th>Last Name</th>
+                                <th>First Name</th>
+                                <th>Middle Name</th>
+                                <th>Area (ha)</th>
+                                <th>Variety</th>
+                                <th>Sacks</th>
+                                <th>Kg/Sack</th>
+                                <th>Total Kg</th>
+                                <th>MT</th>
+                                <th class="text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for f in farmers %}
+                            <tr>
+                                <td><strong>{{ f.rsbsa or '-' }}</strong></td>
+                                <td>{{ f.last_name }}</td>
+                                <td>{{ f.first_name }}</td>
+                                <td>{{ f.middle_name or '-' }}</td>
+                                <td>{{ "%.2f"|format(f.area or 0) }}</td>
+                                <td><span class="badge">{{ f.variety }}</span></td>
+                                <td>{{ f.sacks }}</td>
+                                <td>{{ "%.2f"|format(f.kg or 0) }}</td>
+                                <td>{{ "%.2f"|format((f.sacks or 0) * (f.kg or 0)) }}</td>
+                                <td><strong>{{ "%.2f"|format(((f.sacks or 0) * (f.kg or 0))/1000) }}</strong></td>
+                                <td class="text-center">
+                                    <div class="action-buttons flex-center gap-1">
+                                        <a class="btn btn-sm" href="{{ url_for('wet_farmer.edit_farmer', id=f.id) }}">✏ Edit</a>
+                                        <a class="btn btn-sm btn-danger"
+                                           href="{{ url_for('wet_farmer.delete_farmer', id=f.id) }}"
+                                           onclick="return confirm('Sigurado ka bang gusto mong burahin si {{ f.first_name }} {{ f.last_name }}?');">
+                                            🗑 Delete
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="11" class="text-center text-muted p-4">
+                                    🚫 No farmer records found.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+</body>
+</html>

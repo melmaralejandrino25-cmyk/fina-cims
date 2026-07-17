@@ -1,0 +1,88 @@
+<aside class="sidebar">
+    <!-- Brand Logo / Header -->
+    <div class="brand flex-align gap-3 p-2 mb-4">
+        <div class="seal" aria-hidden="true">🌾</div>
+        <div>
+            <h1 class="text-lg font-bold m-0">CIMS V10</h1>
+            <p class="text-xs text-green font-bold m-0">RICE PROGRAM</p>
+        </div>
+    </div>
+
+    <!-- Navigation Menu -->
+    <nav class="nav flex-column gap-2">
+        
+        <!-- Main Entry -->
+        <a href="/main" 
+           class="nav-item flex-align gap-2 {% if request.path == '/main' %}active{% endif %}">
+            <span aria-hidden="true">🏠</span> Main Dashboard
+        </a>
+
+        <hr class="divider my-2">
+
+        <!-- Wet Season Section -->
+        <div class="menu-label font-bold text-muted text-xs uppercase px-2 mb-1">
+            <span aria-hidden="true">🌧</span> Wet Season 2026
+        </div>
+
+        <a href="/wet" 
+           class="nav-item flex-align gap-2 {% if request.path == '/wet' %}active{% endif %}">
+            <span aria-hidden="true">📊</span> Dashboard
+        </a>
+
+        <a href="/wet/municipality" 
+           class="nav-item flex-align gap-2 {% if '/wet/municipality' in request.path %}active{% endif %}">
+            <span aria-hidden="true">🏙</span> Municipalities
+        </a>
+
+        <a href="/wet/association" 
+           class="nav-item flex-align gap-2 {% if '/wet/association' in request.path %}active{% endif %}">
+            <span aria-hidden="true">👥</span> Associations
+        </a>
+
+        <a href="/wet/farmers" 
+           class="nav-item flex-align gap-2 {% if '/wet/farmers' in request.path %}active{% endif %}">
+            <span aria-hidden="true">🌾</span> Farmers
+        </a>
+
+        <a href="/wet/upload" 
+           class="nav-item flex-align gap-2 {% if '/wet/upload' in request.path %}active{% endif %}">
+            <span aria-hidden="true">📤</span> Upload Excel
+        </a>
+
+        <hr class="divider my-2">
+
+        <!-- Dry Season Section -->
+        <div class="menu-label font-bold text-muted text-xs uppercase px-2 mb-1">
+            <span aria-hidden="true">☀️</span> Dry Season 2027
+        </div>
+
+        <a href="/dry/municipality" 
+           class="nav-item flex-align gap-2 {% if '/dry' in request.path %}active{% endif %}">
+            <span aria-hidden="true">🏙</span> Municipalities
+        </a>
+
+        <hr class="divider my-2">
+
+        <!-- System Utilities -->
+        <a href="/comparison" 
+           class="nav-item flex-align gap-2 {% if '/comparison' in request.path %}active{% endif %}">
+            <span aria-hidden="true">📈</span> Comparison
+        </a>
+
+        <a href="/settings" 
+           class="nav-item flex-align gap-2 {% if '/settings' in request.path %}active{% endif %}">
+            <span aria-hidden="true">⚙</span> Settings
+        </a>
+
+    </nav>
+
+    <!-- Footer Branding -->
+    <div class="agency flex-align gap-2 p-3 mt-auto border-top text-xs">
+        <div class="seal" aria-hidden="true">🌾</div>
+        <div>
+            <strong>DEPARTMENT OF AGRICULTURE</strong>
+            <span class="text-green font-bold">RICE PROGRAM</span><br>
+            <small class="text-muted">Masaganang Agrikultura</small>
+        </div>
+    </div>
+</aside>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Farmer - CIMS V10</title>
+
+    <!-- External Theme CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/cims-theme.css', v='10') }}">
+</head>
+
+<body class="app-layout">
+
+    <!-- Shared Navigation Partial -->
+    {% include "partials/season_sidebar.html" %}
+
+    <!-- MAIN CONTENT -->
+    <main class="app-content">
+        <div class="container flex-column gap-4">
+
+            <!-- Top Header & Navigation -->
+            <div class="topbar flex-between align-center pb-3">
+                <div class="title flex-align gap-3">
+                    <div class="badge" aria-hidden="true">✏️</div>
+                    <div>
+                        <h2 class="m-0 text-xl font-bold">Edit Farmer Record</h2>
+                        <p class="text-muted text-xs m-0">Update RSBSA details, farm area, and harvest production</p>
+                    </div>
+                </div>
+
+                <div class="top-buttons flex-align gap-2">
+                    <a href="{{ url_for('wet_farmer.list_farmers', assoc_id=farmer.association_id) }}" class="btn">
+                        ⬅ Back to Farmers List
+                    </a>
+                </div>
+            </div>
+
+            <!-- Form Panel -->
+            <div class="card p-4">
+                <form method="POST" class="flex-column gap-3">
+
+                    <!-- Personal Information Grid -->
+                    <div class="border-bottom pb-2 mb-2">
+                        <h3 class="m-0 text-md text-green">👤 Identification & Personal Details</h3>
+                    </div>
+
+                    <div class="grid-2 gap-3 mb-2">
+                        <div class="form-group">
+                            <label class="form-label font-bold text-xs uppercase text-muted">RSBSA Number</label>
+                            <input type="text" name="rsbsa" class="form-control w-full" value="{{ farmer.rsbsa }}" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label font-bold text-xs uppercase text-muted">Last Name</label>
+                            <input type="text" name="last_name" class="form-control w-full" value="{{ farmer.last_name }}" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label font-bold text-xs uppercase text-muted">First Name</label>
+                            <input type="text" name="first_name" class="form-control w-full" value="{{ farmer.first_name }}" required>
+                        </div>
+
+                        <div class="grid-2 gap-2">
+                            <div class="form-group">
+                                <label class="form-label font-bold text-xs uppercase text-muted">Middle Name</label>
+                                <input type="text" name="middle_name" class="form-control w-full" value="{{ farmer.middle_name }}">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label font-bold text-xs uppercase text-muted">Suffix</label>
+                                <input type="text" name="suffix" class="form-control w-full" value="{{ farmer.suffix }}">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Production & Farm Details Grid -->
+                    <div class="border-bottom pb-2 mb-2">
+                        <h3 class="m-0 text-md text-green">🌾 Farm & Yield Production Data</h3>
+                    </div>
+
+                    <div class="grid-2 gap-3 mb-3">
+                        <div class="form-group">
+                            <label class="form-label font-bold text-xs uppercase text-muted">Farm Area (ha)</label>
+                            <input type="number" step="0.01" name="area" class="form-control w-full" value="{{ farmer.area }}" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label font-bold text-xs uppercase text-muted">Rice Variety</label>
+                            <input type="text" name="variety" class="form-control w-full" value="{{ farmer.variety }}" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label font-bold text-xs uppercase text-muted">Sacks Harvested</label>
+                            <input type="number" step="0.01" name="sacks" class="form-control w-full" value="{{ farmer.sacks }}" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label font-bold text-xs uppercase text-muted">Weight per Sack (KG)</label>
+                            <input type="number" step="0.01" name="kg" class="form-control w-full" value="{{ farmer.kg }}" required>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="form-actions flex-align gap-2 border-top pt-3">
+                        <button class="btn btn-primary" type="submit">
+                            💾 Save &amp; Update
+                        </button>
+
+                        <a class="btn btn-secondary" href="{{ url_for('wet_farmer.list_farmers', assoc_id=farmer.association_id) }}">
+                            Cancel
+                        </a>
+                    </div>
+
+                </form>
+            </div>
+
+        </div>
+    </main>
+
+</body>
+</html>

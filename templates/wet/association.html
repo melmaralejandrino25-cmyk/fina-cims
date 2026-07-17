@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wet Associations - {{ muni.name }} - CIMS V10</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/cims-theme.css') }}">
+</head>
+
+<body>
+{% include "partials/season_sidebar.html" %}
+
+<main class="app-content">
+    <div class="container">
+
+        <!-- Navigation & Header Bar -->
+        <div class="top-buttons flex-between mb-4">
+            <div class="title flex-align gap-3">
+                <div class="badge">🌧</div>
+                <div>
+                    <h2>Wet Municipality: {{ muni.name }}</h2>
+                    <p class="text-muted">Manage farmer associations for this municipality</p>
+                </div>
+            </div>
+            <div class="flex-align gap-2">
+                <a href="{{ url_for('wet_municipality.list_municipalities') }}" class="btn back-btn">
+                    ⬅ Back
+                </a>
+                <a href="/" class="btn back-btn">
+                    🏠 Dashboard
+                </a>
+            </div>
+        </div>
+
+        <!-- Add Association Form Panel -->
+        <div class="card mb-4">
+            <div class="card-header mb-3">
+                <h3>➕ Add Wet Association</h3>
+            </div>
+
+            <form method="POST" action="{{ url_for('wet_association.add_association', muni_id=muni.id) }}" class="inline-form flex-align gap-3">
+                <input
+                    type="text"
+                    name="name"
+                    class="form-control"
+                    placeholder="Association Name..."
+                    required>
+
+                <button class="btn btn-primary" type="submit">
+                    ➕ Add Association
+                </button>
+            </form>
+        </div>
+
+        <!-- Registered Associations List Panel -->
+        <div class="card">
+            <div class="card-header mb-3">
+                <h3>👥 Registered Associations</h3>
+            </div>
+
+            {% if associations %}
+                <div class="data-list flex-column gap-2">
+                    {% for a in associations %}
+                        <div class="data-row flex-between align-center p-3">
+                            <div class="data-name flex-align gap-2">
+                                <span class="ico-tag">🏛</span>
+                                <span class="font-semibold">{{ a.name }}</span>
+                            </div>
+
+                            <div class="actions flex-align gap-2">
+                                <a class="btn" href="{{ url_for('wet_farmer.list_farmers', assoc_id=a.id) }}">
+                                    👨‍🌾 Farmers
+                                </a>
+
+                                <a class="btn btn-danger"
+                                   href="{{ url_for('wet_association.delete_association', id=a.id, muni_id=muni.id) }}"
+                                   onclick="return confirm('Delete this association?');">
+                                    🗑 Delete
+                                </a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state text-center p-4">
+                    <p class="text-muted">No associations registered for {{ muni.name }} yet.</p>
+                </div>
+            {% endif %}
+        </div>
+
+    </div>
+</main>
+</body>
+</html>

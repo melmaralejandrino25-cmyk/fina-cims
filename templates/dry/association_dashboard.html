@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ association.name }} - Dry Season Production Dashboard - CIMS V10</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/cims-theme.css', v='10') }}">
+</head>
+
+<body class="app-layout">
+
+    <!-- Shared Navigation Partial -->
+    {% include "partials/season_sidebar.html" %}
+
+    <!-- MAIN CONTENT -->
+    <main class="app-content">
+        <div class="container flex-column gap-4">
+
+            <!-- Top Header & Navigation Bar -->
+            <div class="topbar flex-between align-center pb-3">
+                <div class="title flex-align gap-3">
+                    <div class="badge">☀️</div>
+                    <div>
+                        <h2>{{ association.name }}</h2>
+                        <p class="text-muted">Dry Season Association Production Dashboard Overview</p>
+                    </div>
+                </div>
+
+                <div class="top-buttons flex-align gap-2">
+                    <a href="javascript:history.back()" class="btn">
+                        ⬅ Back
+                    </a>
+                    <a href="/" class="btn">
+                        🏠 Dashboard
+                    </a>
+                </div>
+            </div>
+
+            <!-- KPI Cards Grid -->
+            <div class="kpi-grid grid-4 gap-3">
+                <div class="kpi-card text-center p-3">
+                    <h2>{{ total_farmers }}</h2>
+                    <p>Total Farmers</p>
+                </div>
+
+                <div class="kpi-card text-center p-3">
+                    <h2>{{ "%.2f"|format(total_area) }}</h2>
+                    <p>Total Area (ha)</p>
+                </div>
+
+                <div class="kpi-card text-center p-3">
+                    <h2>{{ "%.2f"|format(total_mt) }}</h2>
+                    <p>Total Production (MT)</p>
+                </div>
+
+                <div class="kpi-card text-center p-3">
+                    <h2>{{ top_variety if top_variety else 'N/A' }}</h2>
+                    <p>Top Variety</p>
+                </div>
+            </div>
+
+            <!-- Top Variety Performance Highlight -->
+            <div class="card p-4">
+                <div class="card-header mb-3">
+                    <h3>🏆 Top Variety Performance</h3>
+                </div>
+
+                <div class="highlight-box p-3 rounded">
+                    <span class="highlight font-bold">{{ top_variety if top_variety else 'None' }}</span>
+                    produced a total of
+                    <span class="highlight font-bold">{{ "%.2f"|format(top_value) }} kg</span>
+                    within this Dry Season association.
+                </div>
+            </div>
+
+            <!-- Farmers Overview Table Panel -->
+            <div class="card p-4">
+                <div class="card-header mb-3">
+                    <h3>👨‍🌾 Farmers Overview (Dry Season)</h3>
+                </div>
+
+                {% if farmers %}
+                    <div class="table-responsive">
+                        <table class="cims-table w-full">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Area (ha)</th>
+                                    <th>Variety</th>
+                                    <th>Production (MT)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for f in farmers %}
+                                <tr>
+                                    <td><strong>{{ f.last_name }}, {{ f.first_name }}</strong></td>
+                                    <td>{{ "%.2f"|format(f.area or 0) }}</td>
+                                    <td>{{ f.variety if f.variety else 'N/A' }}</td>
+                                    <td>
+                                        {{ "%.2f"|format(((f.sacks or 0) * (f.kg or 0)) / 1000) }}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="empty-state text-center p-4">
+                        <p class="text-muted">No farmer records found for this Dry Season association.</p>
+                    </div>
+                {% endif %}
+            </div>
+
+        </div>
+    </main>
+
+</body>
+</html>

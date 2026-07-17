@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}CIMS V10 - Management System{% endblock %}</title>
+
+    <!-- External Theme CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/cims-theme.css', v='10') }}">
+    
+    <!-- Chart.js Engine -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    {% block extra_head %}{% endblock %}
+</head>
+
+<body class="app-layout">
+
+    <!-- Shared Navigation Sidebar -->
+    <aside class="app-sidebar" aria-label="Main Application Sidebar">
+        <div class="app-brand flex-align gap-3 p-3">
+            <div class="app-seal badge" aria-hidden="true">🌾</div>
+            <div class="brand-text">
+                <h1 class="m-0 text-md font-bold leading-tight">CIMS V10</h1>
+                <p class="m-0 text-muted text-xs font-bold uppercase tracking-wide">Rice & Corn Program</p>
+            </div>
+        </div>
+
+        <nav class="app-nav flex-column gap-1" aria-label="Main navigation">
+            <a href="/" 
+               class="nav-link flex-align gap-2 {% if request.path == '/' %}active{% endif %}">
+                <span class="nav-icon" aria-hidden="true">⌂</span>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="/municipality" 
+               class="nav-link flex-align gap-2 {% if request.path.startswith('/municipality') %}active{% endif %}">
+                <span class="nav-icon" aria-hidden="true">🏙️</span>
+                <span>Municipality</span>
+            </a>
+
+            <a href="/association" 
+               class="nav-link flex-align gap-2 {% if request.path.startswith('/association') %}active{% endif %}">
+                <span class="nav-icon" aria-hidden="true">👥</span>
+                <span>Associations</span>
+            </a>
+
+            <a href="/farmer" 
+               class="nav-link flex-align gap-2 {% if request.path.startswith('/farmer') %}active{% endif %}">
+                <span class="nav-icon" aria-hidden="true">👨‍🌾</span>
+                <span>Farmers</span>
+            </a>
+
+            <a href="/report" 
+               class="nav-link flex-align gap-2 {% if request.path.startswith('/report') %}active{% endif %}">
+                <span class="nav-icon" aria-hidden="true">📊</span>
+                <span>Reports</span>
+            </a>
+
+            <a href="/comparison" 
+               class="nav-link flex-align gap-2 {% if request.path == '/comparison' %}active{% endif %}">
+                <span class="nav-icon" aria-hidden="true">⇄</span>
+                <span>Comparison Dashboard</span>
+            </a>
+
+            <a href="/logout" class="nav-link flex-align gap-2 text-danger mt-2">
+                <span class="nav-icon" aria-hidden="true">🚪</span>
+                <span>Logout</span>
+            </a>
+        </nav>
+
+        <div class="app-agency mt-auto p-3 border-top flex-column gap-1">
+            <strong class="text-xs uppercase font-bold text-main">Department of Agriculture</strong>
+            <span class="text-xs text-muted">Provincial Agriculture Office</span>
+        </div>
+    </aside>
+
+    <!-- Main Content Wrapper -->
+    <main class="app-content">
+        <div class="container flex-column gap-4">
+            {% block content %}
+            <!-- Page child content renders here -->
+            {% endblock %}
+        </div>
+    </main>
+
+    {% block scripts %}{% endblock %}
+
+</body>
+</html>

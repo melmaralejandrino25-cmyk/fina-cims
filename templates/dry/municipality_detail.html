@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dry Municipality Details - {{ muni.name }} - CIMS V10</title>
+
+    <!-- External Theme CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/cims-theme.css', v='10') }}">
+</head>
+
+<body class="app-layout">
+
+    <!-- Shared Navigation Partial -->
+    {% include "partials/season_sidebar.html" %}
+
+    <!-- MAIN CONTENT -->
+    <main class="app-content">
+        <div class="container flex-column gap-4">
+
+            <!-- Top Header & Navigation -->
+            <div class="topbar flex-between align-center pb-3">
+                <div class="title flex-align gap-3">
+                    <div class="badge" aria-hidden="true">☀️</div>
+                    <div>
+                        <h2 class="m-0 text-xl font-bold">{{ muni["name"] }}</h2>
+                        <p class="text-muted text-xs m-0">Dry Season Municipality overview and association management</p>
+                    </div>
+                </div>
+
+                <div class="top-buttons flex-align gap-2">
+                    <a href="/" class="btn btn-secondary">🏠 Dashboard</a>
+                    <a href="{{ url_for('dry_municipality.list_municipalities') }}" class="btn btn-secondary">⬅ Back</a>
+                </div>
+            </div>
+
+            <!-- Summary KPI Cards Grid -->
+            <div class="grid-5 gap-3">
+                <div class="card p-3 text-center">
+                    <h2 class="m-0 text-xl font-bold text-orange">{{ total_farmers }}</h2>
+                    <p class="text-muted text-xs uppercase font-bold m-0 mt-1">👨‍🌾 Farmers</p>
+                </div>
+
+                <div class="card p-3 text-center">
+                    <h2 class="m-0 text-xl font-bold text-green">{{ "%.2f"|format(total_area) }}</h2>
+                    <p class="text-muted text-xs uppercase font-bold m-0 mt-1">🌱 Area (ha)</p>
+                </div>
+
+                <div class="card p-3 text-center">
+                    <h2 class="m-0 text-xl font-bold text-orange">{{ "%.2f"|format(total_sacks) }}</h2>
+                    <p class="text-muted text-xs uppercase font-bold m-0 mt-1">🌾 Sacks</p>
+                </div>
+
+                <div class="card p-3 text-center">
+                    <h2 class="m-0 text-xl font-bold text-orange">{{ "%.2f"|format(total_kg) }}</h2>
+                    <p class="text-muted text-xs uppercase font-bold m-0 mt-1">⚖ Kilograms</p>
+                </div>
+
+                <div class="card p-3 text-center">
+                    <h2 class="m-0 text-xl font-bold text-green">{{ "%.2f"|format(total_mt) }}</h2>
+                    <p class="text-muted text-xs uppercase font-bold m-0 mt-1">📦 Metric Tons</p>
+                </div>
+            </div>
+
+            <!-- Add Association Form Panel -->
+            <div class="card p-4">
+                <h3 class="m-0 text-md font-bold mb-3">➕ Add Association</h3>
+
+                <form method="POST"
+                      action="{{ url_for('dry_association.add_association', muni_id=muni.id) }}"
+                      class="flex-column gap-3">
+
+                    <div class="form-group">
+                        <label class="form-label font-bold text-xs uppercase text-muted">Association Name</label>
+                        <input type="text"
+                               name="name"
+                               placeholder="Enter association name..."
+                               class="form-control w-full"
+                               required>
+                    </div>
+
+                    <div class="form-actions border-top pt-3">
+                        <button class="btn btn-primary" type="submit">
+                            ➕ Add Association
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+
+            <!-- Associations Table -->
+            <div class="card p-0">
+                <div class="p-4 border-bottom">
+                    <h3 class="m-0 text-md font-bold">👥 Dry Season Associations List</h3>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Association</th>
+                                <th>Farmers</th>
+                                <th>Area (ha)</th>
+                                <th>Sacks</th>
+                                <th>Kg</th>
+                                <th>MT</th>
+                                <th class="text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for a in associations %}
+                            <tr>
+                                <td><strong>#{{ a.id }}</strong></td>
+                                <td><span class="font-bold text-orange">{{ a.name }}</span></td>
+                                <td>{{ a.farmer_count }}</td>
+                                <td>{{ "%.2f"|format(a.total_area) }}</td>
+                                <td>{{ "%.2f"|format(a.total_sacks) }}</td>
+                                <td>{{ "%.2f"|format(a.total_kg) }}</td>
+                                <td><strong>{{ "%.2f"|format(a.total_kg/1000) }}</strong></td>
+                                <td class="text-center">
+                                    <div class="action-buttons flex-center gap-1">
+                                        <a class="btn btn-sm"
+                                           href="{{ url_for('dry_farmer.list_farmers', assoc_id=a.id) }}">
+                                           👨‍🌾 Farmers
+                                        </a>
+
+                                        <a class="btn btn-sm btn-danger"
+                                           href="{{ url_for('dry_association.delete_association', id=a.id, muni_id=muni.id) }}"
+                                           onclick="return confirm('Delete this association?');">
+                                           🗑 Delete
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="8" class="text-center text-muted p-4">
+                                    🚫 No Dry Season associations found.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+</body>
+</html>

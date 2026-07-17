@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wet Season Municipalities - CIMS V10</title>
+
+    <!-- External Theme CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/cims-theme.css', v='10') }}">
+</head>
+
+<body class="app-layout">
+
+    <!-- Shared Navigation Partial -->
+    {% include "partials/season_sidebar.html" %}
+
+    <!-- MAIN CONTENT -->
+    <main class="app-content">
+        <div class="container flex-column gap-4">
+
+            <!-- Top Header & Navigation -->
+            <div class="topbar flex-between align-center pb-3">
+                <div class="title flex-align gap-3">
+                    <div class="badge" aria-hidden="true">🌧️</div>
+                    <div>
+                        <h2 class="m-0 text-xl font-bold">Wet Season Municipalities</h2>
+                        <p class="text-muted text-xs m-0">Manage wet season registered municipalities and records</p>
+                    </div>
+                </div>
+
+                <div class="top-buttons flex-align gap-2">
+                    <a href="/" class="btn btn-secondary">🏠 Dashboard</a>
+                    <a href="javascript:history.back()" class="btn btn-secondary">⬅ Back</a>
+                    <a href="{{ url_for('wet_municipality.add_municipality') }}" class="btn btn-primary">
+                        ➕ Add Municipality
+                    </a>
+                </div>
+            </div>
+
+            <!-- Municipalities Grid -->
+            {% if municipalities %}
+                <div class="grid-3 gap-3">
+                    {% for muni in municipalities %}
+                    <div class="card p-4 flex-column justify-between gap-3">
+                        <div class="card-header border-bottom pb-2">
+                            <h3 class="m-0 text-lg font-bold text-blue flex-align gap-2">
+                                🏙️ {{ muni["name"] }}
+                            </h3>
+                        </div>
+
+                        <div class="card-actions flex-align gap-2 pt-2">
+                            <a class="btn btn-primary flex-grow text-center"
+                               href="{{ url_for('wet_municipality.municipality_detail', muni_id=muni['id']) }}">
+                                📂 Open
+                            </a>
+
+                            <a class="btn btn-secondary"
+                               href="{{ url_for('wet_municipality.edit_municipality', muni_id=muni['id']) }}">
+                                ✏ Edit
+                            </a>
+
+                            <a class="btn btn-danger"
+                               href="{{ url_for('wet_municipality.delete_municipality', muni_id=muni['id']) }}"
+                               onclick="return confirm('Are you sure you want to delete this municipality?');">
+                                🗑 Delete
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="card p-5 text-center">
+                    <h3 class="text-muted font-bold m-0">🚫 No Wet Season municipalities found.</h3>
+                    <p class="text-muted text-xs mt-1">Click "Add Municipality" above to create your first entry.</p>
+                </div>
+            {% endif %}
+
+        </div>
+    </main>
+
+</body>
+</html>

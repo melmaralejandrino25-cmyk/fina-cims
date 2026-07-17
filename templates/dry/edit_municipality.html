@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Municipality (Dry Season) - CIMS V10</title>
+
+    <!-- External Theme CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/cims-theme.css', v='10') }}">
+</head>
+
+<body class="app-layout">
+
+    <!-- Shared Navigation Partial -->
+    {% include "partials/season_sidebar.html" %}
+
+    <!-- MAIN CONTENT -->
+    <main class="app-content">
+        <div class="container flex-column gap-4">
+
+            <!-- Top Header & Navigation -->
+            <div class="topbar flex-between align-center pb-3">
+                <div class="title flex-align gap-3">
+                    <div class="badge" aria-hidden="true">☀️</div>
+                    <div>
+                        <h2 class="m-0 text-xl font-bold">Edit Municipality (Dry Season 2027)</h2>
+                        <p class="text-muted text-xs m-0">Update municipality record details for Dry Season</p>
+                    </div>
+                </div>
+
+                <div class="top-buttons flex-align gap-2">
+                    <!-- Updated route for Dry Season -->
+                    <a href="{{ url_for('dry_municipality.list_municipalities') }}" class="btn">
+                        ⬅ Back to Municipalities
+                    </a>
+                </div>
+            </div>
+
+            <!-- Form Panel -->
+            <div class="card p-4">
+                <form method="POST" class="flex-column gap-3">
+
+                    <div class="border-bottom pb-2 mb-2">
+                        <h3 class="m-0 text-md text-green">☀️ Dry Season Municipality Details</h3>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label class="form-label font-bold text-xs uppercase text-muted">Municipality Name</label>
+                        <input type="text" name="name" class="form-control w-full" value="{{ muni.name }}" required autofocus>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="form-actions flex-align gap-2 border-top pt-3">
+                        <button class="btn btn-primary" type="submit">
+                            💾 Save &amp; Update
+                        </button>
+
+                        <a class="btn btn-secondary" href="{{ url_for('dry_municipality.list_municipalities') }}">
+                            Cancel
+                        </a>
+                    </div>
+
+                </form>
+            </div>
+
+        </div>
+    </main>
+
+</body>
+</html>

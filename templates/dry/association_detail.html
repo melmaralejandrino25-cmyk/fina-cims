@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ association["name"] }} - Dry Season Detail - CIMS V10</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/cims-theme.css', v='10') }}">
+
+    <style>
+        :root {
+            --bg: #030807;
+            --panel: #0b1111;
+            --panel-2: #101818;
+            --line: #243332;
+            --green: #75f049;
+            --green-2: #39b628;
+            --soft: #aebbb7;
+            --white: #f4f8f6;
+            --red: #ff3636;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: radial-gradient(circle at 38% 4%, rgba(240, 214, 73, .12), transparent 24%),
+                linear-gradient(145deg, #020504, #091111 44%, #020605);
+            color: var(--white);
+            font-family: 'Poppins', Arial, sans-serif;
+            overflow: hidden;
+        }
+
+        a { color: inherit; text-decoration: none; }
+
+        .shell { display: grid; grid-template-columns: 240px minmax(0, 1fr); min-height: 100vh; height: 100vh; }
+        .sidebar { position: sticky; top: 0; height: 100vh; padding: 18px; border-right: 1px solid var(--line); background: linear-gradient(180deg, rgba(5, 13, 13, .98), rgba(2, 6, 7, .98)); }
+        .main { padding: 10px; height: 100vh; overflow-y: auto; }
+        .dashboard { min-height: calc(100vh - 28px); border: 1px solid #33413f; border-radius: 18px; padding: 16px; background: rgba(6, 12, 13, .75); display: flex; flex-direction: column; gap: 20px; }
+
+        .brand { display: flex; gap: 12px; align-items: center; padding: 8px 8px 24px; }
+        .seal { width: 54px; height: 54px; border-radius: 50%; display: grid; place-items: center; background: radial-gradient(circle, #3b3512, #110d07 64%); border: 2px solid #7c6d1f; font-size: 28px; }
+        .brand h1 { margin: 0; font-size: 28px; font-weight: 800; }
+        .brand p { margin: 6px 0 0; color: #f0d649; font-size: 14px; font-weight: 700; }
+
+        .nav { display: grid; gap: 10px; }
+        .nav a { display: flex; align-items: center; gap: 15px; padding: 14px 16px; border-radius: 8px; font-weight: 600; }
+        .nav a:hover, .nav a.active { background: linear-gradient(90deg, #6b6317, #47400f); }
+        .nav .ico { width: 28px; text-align: center; color: #f0d649; font-size: 22px; }
+
+        .agency { position: absolute; left: 18px; right: 18px; bottom: 20px; display: flex; gap: 12px; align-items: center; padding-top: 18px; border-top: 1px solid var(--line); font-size: 12px; }
+        .agency strong { display: block; color: white; }
+        .agency span { display: block; color: #f0d649; font-weight: 700; }
+
+        .topbar { display: flex; justify-content: space-between; align-items: center; gap: 18px; padding: 4px 12px 16px; border-bottom: 1px solid #1e2b2a; }
+        .title { display: flex; gap: 16px; align-items: center; }
+        .title .badge { width: 43px; height: 43px; display: grid; place-items: center; color: #f0d649; border: 1px solid #786e28; background: #252010; font-size: 24px; border-radius: 8px; }
+        .title h2 { margin: 0; font-size: 24px; font-weight: 800; }
+        .title p { margin: 2px 0 0; color: var(--soft); font-size: 13px; }
+
+        .kpi-card { background: linear-gradient(145deg, rgba(37, 34, 16, .85), rgba(18, 16, 7, .95)); border: 1px solid #786e28; border-radius: 12px; padding: 24px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); display: flex; align-items: center; justify-content: space-between; }
+        .kpi-card h3 { margin: 0 0 6px; font-size: 14px; font-weight: 600; color: #f0d649; text-transform: uppercase; }
+        .kpi-card .value { margin: 0; font-size: 36px; font-weight: 800; color: var(--white); }
+        
+        .panel { background: linear-gradient(145deg, rgba(14, 22, 22, .98), rgba(5, 10, 11, .98)); border: 1px solid #243332; border-radius: 14px; padding: 20px; }
+        .panel-title { margin-bottom: 16px; border-bottom: 1px solid #1e2b2a; padding-bottom: 10px; }
+        .panel-title h3 { margin: 0; font-size: 16px; color: #f0d649; display: flex; align-items: center; gap: 8px; }
+
+        .cims-table { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 10px; }
+        .cims-table th { background: #252210; color: #f0d649; border-bottom: 2px solid #786e28; padding: 12px 16px; text-align: left; font-size: 13px; font-weight: 700; text-transform: uppercase; }
+        .cims-table td { padding: 12px 16px; background: var(--panel-2); border-bottom: 1px solid #1c2b2a; font-size: 14px; }
+        
+        .btn { background: #252210; color: #f0d649; border: 1px solid #786e28; padding: 9px 15px; border-radius: 8px; font-weight: 600; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s ease; }
+        .btn:hover { background: #6b6317; color: white; border-color: #f0d649; }
+    </style>
+</head>
+
+<body>
+
+    <div class="shell">
+
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="seal">🌾</div>
+                <div><h1>CIMS V10</h1><p>RICE PROGRAM</p></div>
+            </div>
+
+            <nav class="nav">
+                <a href="/"><span class="ico">⌂</span> Dashboard</a>
+                <a href="/wet/municipality/"><span class="ico">☔</span> Wet Season 2026</a>
+                <a href="/dry/municipality/" class="active"><span class="ico">☀️</span> Dry Season 2027</a>
+                <a href="/comparison"><span class="ico">⇄</span> Comparison</a>
+                <a href="/settings"><span class="ico">⚙</span> Settings</a>
+            </nav>
+
+            <div class="agency">
+                <div class="seal">🌾</div>
+                <div><strong>DEPARTMENT OF AGRICULTURE</strong><span>RICE PROGRAM</span><br>Masaganang Agrikultura</div>
+            </div>
+        </aside>
+
+        <main class="main">
+            <section class="dashboard">
+
+                <header class="topbar">
+                    <div class="title">
+                        <div class="badge">🏢</div>
+                        <div>
+                            <h2>{{ association["name"] }}</h2>
+                            <p>Dry Season Association Production &amp; Farmer Details</p>
+                        </div>
+                    </div>
+
+                    <div class="top-buttons">
+                        <a href="javascript:history.back()" class="btn">⬅ Back</a>
+                        <a href="/" class="btn">🏠 Dashboard</a>
+                    </div>
+                </header>
+
+                <section class="kpi-card">
+                    <div>
+                        <h3>Total Production</h3>
+                        <p class="value">{{ "%.2f"|format(total_mt) }} <span style="font-size:22px; color:#f0d649;">MT</span></p>
+                    </div>
+                    <div style="font-size:38px; opacity:0.8;">📦</div>
+                </section>
+
+                <section class="panel">
+                    <div class="panel-title">
+                        <h3>👨‍🌾 Dry Season Farmers Directory</h3>
+                    </div>
+
+                    {% if farmers %}
+                        <div class="table-responsive">
+                            <table class="cims-table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Area (ha)</th>
+                                        <th>Production (KG)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for f in farmers %}
+                                    <tr>
+                                        <td><strong>{{ f["name"] }}</strong></td>
+                                        <td>{{ f["area"] }}</td>
+                                        <td>{{ f["kg"] }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="empty-state">
+                            <p>No farmers associated with this entity for Dry Season.</p>
+                        </div>
+                    {% endif %}
+                </section>
+
+            </section>
+        </main>
+    </div>
+</body>
+</html>

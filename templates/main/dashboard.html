@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CIMS V10 Comparison Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg: #030807;
+            --panel: #0b1111;
+            --panel-2: #101818;
+            --line: #243332;
+            --green: #75f049;
+            --green-2: #39b628;
+            --soft: #aebbb7;
+            --white: #f4f8f6;
+            --red: #ff3636;
+        }
+        * { box-sizing: border-box; }
+        body { margin: 0; min-height: 100vh; background: radial-gradient(circle at 38% 4%, rgba(101, 240, 73, .12), transparent 24%), linear-gradient(145deg, #020504, #091111 44%, #020605); color: var(--white); font-family: 'Poppins', Arial, sans-serif; overflow: hidden; }
+        a { color: inherit; text-decoration: none; }
+        .shell { display: grid; grid-template-columns: 240px minmax(0, 1fr); min-height: 100vh; height: 100vh; }
+        .sidebar { position: sticky; top: 0; height: 100vh; padding: 18px; border-right: 1px solid var(--line); background: linear-gradient(180deg, rgba(5, 13, 13, .98), rgba(2, 6, 7, .98)); }
+        .main { padding: 10px; height: 100vh; overflow-y: auto; }
+        .dashboard { min-height: calc(100vh - 28px); border: 1px solid #33413f; border-radius: 18px; padding: 16px; background: rgba(6, 12, 13, .75); }
+        .brand { display: flex; gap: 12px; align-items: center; padding: 8px 8px 24px; }
+        .seal { width: 54px; height: 54px; border-radius: 50%; display: grid; place-items: center; background: radial-gradient(circle, #123b16, #07110b 64%); border: 2px solid #1f7c29; font-size: 28px; }
+        .brand h1 { margin: 0; font-size: 28px; font-weight: 800; }
+        .brand p { margin: 6px 0 0; color: var(--green); font-size: 14px; font-weight: 700; }
+        .nav { display: grid; gap: 10px; }
+        .nav a { display: flex; align-items: center; gap: 15px; padding: 14px 16px; border-radius: 8px; font-weight: 600; }
+        .nav a:hover, .nav a.active { background: linear-gradient(90deg, #176b18, #10470f); }
+        .nav .ico { width: 28px; text-align: center; color: var(--green); font-size: 22px; }
+        .agency { position: absolute; left: 18px; right: 18px; bottom: 20px; display: flex; gap: 12px; align-items: center; padding-top: 18px; border-top: 1px solid var(--line); font-size: 12px; }
+        .agency strong { display: block; color: white; }
+        .agency span { display: block; color: var(--green); font-weight: 700; }
+        .topbar { display: flex; justify-content: space-between; align-items: flex-start; gap: 18px; padding: 4px 12px 20px; border-bottom: 1px solid #1e2b2a; }
+        .title { display: flex; gap: 16px; align-items: center; }
+        .title .badge { width: 43px; height: 43px; display: grid; place-items: center; color: var(--green); border: 1px solid #28782b; background: #102515; font-size: 24px; }
+        .title h2 { margin: 0; font-size: 29px; font-weight: 800; }
+        .title p { margin: 7px 0 0; color: var(--green); font-weight: 700; font-size: 17px; }
+        .updated { display: flex; gap: 12px; align-items: center; font-weight: 700; }
+        .updated .calendar { color: var(--green); font-size: 27px; }
+        .updated small { display: block; color: var(--green); }
+        .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 20px; margin: 20px 0; align-items: stretch; }
+        .stat { background: linear-gradient(145deg, #101919, #071111); border: 1px solid #29403d; border-left: 5px solid var(--green); border-radius: 14px; padding: 20px; min-height: 165px; display: grid; grid-template-columns: 58px 1fr; gap: 14px; }
+        .stat-icon { width: 58px; height: 58px; border-radius: 16px; display: grid; place-items: center; background: #173d1c; color: #8eff65; font-size: 30px; }
+        .stat h3 { margin: 0; color: var(--green); font-size: 12px; }
+        .pair { display: grid; grid-template-columns: repeat(2, minmax(80px, 1fr)); gap: 20px; margin: 14px 0; }
+        .pair span { display: flex; flex-direction: column; align-items: flex-start; font-size: 12px; }
+        .pair b { display: block; font-size: 19px; margin-top: 4px; }
+        .delta { font-weight: 700; }
+        .delta.increase { color: var(--green); }
+        .delta.decrease { color: var(--red); }
+        .delta.neutral { color: var(--soft); }
+        .content { display: grid; gap: 18px; margin-top: 18px; }
+        .panel { background: linear-gradient(145deg, rgba(14, 22, 22, .98), rgba(5, 10, 11, .98)); border: 1px solid #243332; border-radius: 14px; padding: 18px; overflow: hidden; }
+        .panel-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .panel-title h3 { margin: 0; font-size: 18px; color: var(--green); }
+        .analysis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+        .mini { background: #101818; border: 1px solid #263837; border-radius: 12px; padding: 18px; }
+        .mini p { margin: 0 0 10px; color: #aebbb7; font-size: 13px; }
+        .mini strong { display: block; font-size: 28px; color: white; }
+        .performers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+        .performer-card { background: linear-gradient(145deg, #0f1818, #081111); border: 1px solid #2f4744; border-left: 5px solid var(--green); border-radius: 14px; padding: 22px; }
+        .performer-card h4 { margin: 0 0 12px; font-size: 15px; color: var(--green); }
+        .performer-card h2 { margin: 0; font-size: 24px; font-weight: 800; }
+        .performer-card .value { font-size: 28px; font-weight: 800; }
+        .performer-card .trend { margin-top: 10px; font-weight: 700; color: var(--green); }
+        #shareChart { width: 100% !important; max-height: 350px; }
+        
+        @media(max-width:1100px) { body { overflow: auto; } .shell { grid-template-columns: 1fr; } .sidebar { position: relative; height: auto; } .main { height: auto; overflow: visible; } .agency { position: relative; left: auto; right: auto; bottom: auto; margin-top: 25px; } .analysis, .performers { grid-template-columns: 1fr; } .topbar { flex-direction: column; } }
+    </style>
+</head>
+<body>
+    <div class="shell">
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="seal">🌾</div>
+                <div>
+                    <h1>CIMS V10</h1>
+                    <p>RICE PROGRAM</p>
+                </div>
+            </div>
+            <nav class="nav">
+                <a href="/" class="{% if request.path == '/' %}active{% endif %}"><span class="ico">⌂</span>Dashboard</a>
+                <a href="/wet/municipality/" class="{% if request.path.startswith('/wet') %}active{% endif %}"><span class="ico">☔</span>Wet Season 2026</a>
+                <a href="/dry/municipality/" class="{% if request.path.startswith('/dry') %}active{% endif %}"><span class="ico">☔</span>Wet Season 2027</a>
+                <a href="/comparison" class="{% if request.path.startswith('/comparison') %}active{% endif %}"><span class="ico">⇄</span>Comparison</a>
+                <a href="#"><span class="ico">▤</span>Reports</a>
+                <a href="/settings" class="{% if request.path.startswith('/settings') %}active{% endif %}"><span class="ico">⚙</span>Settings</a>
+            </nav>
+            <div class="agency">
+                <div class="seal">🌾</div>
+                <div>
+                    <strong>DEPARTMENT OF AGRICULTURE PHILIPPINES</strong>
+                    <span>RICE PROGRAM</span><br>
+                    Masaganang Agrikultura,<br> Maunlad na Ekonomiya
+                </div>
+            </div>
+        </aside>
+
+        <main class="main">
+            <section class="dashboard">
+                <header class="topbar">
+                    <div class="title">
+                        <div class="badge">▥</div>
+                        <div>
+                            <h2>CIMS V10 COMPARISON DASHBOARD</h2>
+                            <p>Wet Season 2026 vs Wet Season 2027</p>
+                        </div>
+                    </div>
+                    <div class="updated">
+                        <div class="calendar">▣</div>
+                        <div>Last Updated:<small>{{ updated_at }}</small></div>
+                    </div>
+                </header>
+
+                <section class="stat-grid">
+                    <article class="stat">
+                        <div class="stat-icon">👨‍🌾</div>
+                        <div>
+                            <h3>Farmers</h3>
+                            <div class="pair">
+                                <span>Wet 2026<b>{{ "{:,}".format(wet_farmers or 0) }}</b></span>
+                                <span>Wet 2027<b>{{ "{:,}".format(dry_farmers or 0) }}</b></span>
+                            </div>
+                            <div class="delta {% if farmer_change>0 %}increase{% elif farmer_change<0 %}decrease{% else %}neutral{% endif %}">
+                                {{ "%+d"|format(farmer_difference) }} ({{ "%.2f"|format(farmer_change or 0) }}%)
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="stat">
+                        <div class="stat-icon">🏢</div>
+                        <div>
+                            <h3>Associations</h3>
+                            <div class="pair">
+                                <span>Wet 2026<b>{{ wet_assoc }}</b></span>
+                                <span>Wet 2027<b>{{ dry_assoc }}</b></span>
+                            </div>
+                            <div class="delta {% if association_difference>0 %}increase{% elif association_difference<0 %}decrease{% else %}neutral{% endif %}">
+                                {{ "%+d"|format(association_difference) }}
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="stat">
+                        <div class="stat-icon">🌱</div>
+                        <div>
+                            <h3>Total Area (ha)</h3>
+                            <div class="pair">
+                                <span>Wet 2026<b>{{ "%.2f"|format(wet_area or 0) }}</b></span>
+                                <span>Wet 2027<b>{{ "%.2f"|format(dry_area or 0) }}</b></span>
+                            </div>
+                            <div class="delta {% if area_change>0 %}increase{% elif area_change<0 %}decrease{% else %}neutral{% endif %}">
+                                {{ "%+.2f"|format(area_difference or 0) }} ha ({{ "%.2f"|format(area_change or 0) }}%)
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="stat">
+                        <div class="stat-icon">🌾</div>
+                        <div>
+                            <h3>Production & Yield</h3>
+                            <div class="pair">
+                                <span><small>Wet 2026</small><b>{{ "%.2f"|format(wet_mt or 0) }}</b><small>MT</small></span>
+                                <span><small>Wet 2027</small><b>{{ "%.2f"|format(dry_mt or 0) }}</b><small>MT</small></span>
+                            </div>
+                            <hr style="border-color:#20302f;margin:12px 0;">
+                            <div class="pair">
+                                <span><small>Wet Yield</small><b>{{ "%.2f"|format(avg_yield_wet or 0) }}</b><small>MT/ha</small></span>
+                                <span><small>Wet Yield</small><b>{{ "%.2f"|format(avg_yield_dry or 0) }}</b><small>MT/ha</small></span>
+                            </div>
+                            <div class="delta {% if production_change>0 %}increase{% elif production_change<0 %}decrease{% else %}neutral{% endif %}">
+                                {{ "%+.2f"|format(production_difference or 0) }} MT ({{ "%.2f"|format(production_change or 0) }}%)
+                            </div>
+                        </div>
+                    </article>
+                </section>
+
+                <div class="content">
+                    <section class="panel">
+                        <div class="panel-title">
+                            <h3>GROWTH ANALYSIS</h3>
+                            <span>Wet 2026 vs Wet 2027</span>
+                        </div>
+                        <div class="analysis">
+                            <div class="mini">
+                                <p>Farmers Change</p>
+                                <strong>{{ "%.2f"|format((farmer_change or 0)|abs) }}%</strong>
+                                <div class="delta {% if farmer_change > 0 %}increase{% elif farmer_change < 0 %}decrease{% else %}neutral{% endif %}">
+                                    {% if farmer_change > 0 %}↑ Increase{% elif farmer_change < 0 %}↓ Decrease{% else %}→ No Change{% endif %}
+                                </div>
+                            </div>
+                            <div class="mini">
+                                <p>Area Change</p>
+                                <strong>{{ "%.2f"|format((area_change or 0)|abs) }}%</strong>
+                                <div class="delta {% if area_change > 0 %}increase{% elif area_change < 0 %}decrease{% else %}neutral{% endif %}">
+                                    {% if area_change > 0 %}↑ Increase{% elif area_change < 0 %}↓ Decrease{% else %}→ No Change{% endif %}
+                                </div>
+                            </div>
+                            <div class="mini">
+                                <p>Production Change</p>
+                                <strong>{{ "%.2f"|format((production_change or 0)|abs) }}%</strong>
+                                <div class="delta {% if production_change > 0 %}increase{% elif production_change < 0 %}decrease{% else %}neutral{% endif %}">
+                                    {% if production_change > 0 %}↑ Increase{% elif production_change < 0 %}↓ Decrease{% else %}→ No Change{% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="panel">
+                        <div class="panel-title">
+                            <h3>🏆 TOP PERFORMERS</h3>
+                            <span>Best Performing Municipalities</span>
+                        </div>
+                        <div class="performers">
+                            <div class="performer-card">
+                                <h4>🌾 Highest Production</h4>
+                                <p><strong>Wet 2026</strong></p>
+                                <h2>{{ highest_production_wet.municipality }}</h2>
+                                <div class="value">{{ "%.2f"|format(highest_production_wet.wet_mt or 0) }} MT</div>
+                                <hr style="margin:15px 0;border-color:#29403d;">
+                                <p><strong>Wet 2027</strong></p>
+                                <h2>{{ highest_production_dry.municipality }}</h2>
+                                <div class="value">{{ "%.2f"|format(highest_production_dry.dry_mt or 0) }} MT</div>
+                                <div class="trend">▲ Top Producer</div>
+                            </div>
+
+                            <div class="performer-card">
+                                <h4>📈 Highest Yield</h4>
+                                <p><strong>Wet 2026</strong></p>
+                                <h2>{{ highest_yield_wet.municipality }}</h2>
+                                <div class="value">
+                                    {% if highest_yield_wet and highest_yield_wet.wet_area > 0 %}
+                                    {{ "%.2f"|format(highest_yield_wet.wet_mt / highest_yield_wet.wet_area) }}
+                                    {% else %}0.00{% endif %} MT/ha
+                                </div>
+                                <hr style="margin:15px 0;border-color:#29403d;">
+                                <p><strong>Wet 2027</strong></p>
+                                <h2>{{ highest_yield_dry.municipality }}</h2>
+                                <div class="value">
+                                    {% if highest_yield_dry and highest_yield_dry.dry_area > 0 %}
+                                    {{ "%.2f"|format(highest_yield_dry.dry_mt / highest_yield_dry.dry_area) }}
+                                    {% else %}0.00{% endif %} MT/ha
+                                </div>
+                                <div class="trend">▲ Highest Yield</div>
+                            </div>
+
+                            <div class="performer-card">
+                                <h4>🌱 Largest Harvest Area</h4>
+                                <p><strong>Wet 2026</strong></p>
+                                <h2>{{ largest_area_wet.municipality }}</h2>
+                                <div class="value">{{ "%.2f"|format(largest_area_wet.wet_area or 0) }} ha</div>
+                                <hr style="margin:15px 0;border-color:#29403d;">
+                                <p><strong>Wet 2027</strong></p>
+                                <h2>{{ largest_area_dry.municipality }}</h2>
+                                <div class="value">{{ "%.2f"|format(largest_area_dry.dry_area or 0) }} ha</div>
+                                <div class="trend">▲ Largest Area</div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="panel">
+                        <div class="panel-title">
+                            <h3>PRODUCTION SHARE</h3>
+                            <span>Wet 2026 vs Wet 2027</span>
+                        </div>
+                        <canvas id="shareChart"></canvas>
+                    </section>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const productionData = {{ [wet_mt|default(0), dry_mt|default(0)] | tojson }};
+        const ctx = document.getElementById('shareChart');
+        if (ctx) {
+            new Chart(ctx, {
+                type: 'bar',
+                data: { labels: ["Wet 2026", "Wet 2027"], datasets: [{ label: "Production MT", data: productionData, backgroundColor: '#75f049' }] },
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
+            });
+        }
+    </script>
+</body>
+</html>
