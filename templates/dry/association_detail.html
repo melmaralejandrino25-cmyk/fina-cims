@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ association["name"] }} - Dry Season Detail - CIMS V10</title>
+    <title>{{ association["name"] }} - Wet Season Detail - CIMS V10</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/cims-theme.css', v='10') }}">
@@ -91,7 +91,7 @@
             <nav class="nav">
                 <a href="/"><span class="ico">⌂</span> Dashboard</a>
                 <a href="/wet/municipality/"><span class="ico">☔</span> Wet Season 2026</a>
-                <a href="/dry/municipality/" class="active"><span class="ico">☀️</span> Dry Season 2027</a>
+                <a href="/dry/municipality/" class="active"><span class="ico">☀️</span> Wet Season 2027</a>
                 <a href="/comparison"><span class="ico">⇄</span> Comparison</a>
                 <a href="/settings"><span class="ico">⚙</span> Settings</a>
             </nav>
@@ -110,7 +110,7 @@
                         <div class="badge">🏢</div>
                         <div>
                             <h2>{{ association["name"] }}</h2>
-                            <p>Dry Season Association Production &amp; Farmer Details</p>
+                            <p>Wet Season Association Production &amp; Farmer Details</p>
                         </div>
                     </div>
 
@@ -130,7 +130,7 @@
 
                 <section class="panel">
                     <div class="panel-title">
-                        <h3>👨‍🌾 Dry Season Farmers Directory</h3>
+                        <h3>👨‍🌾 Wet Season Farmers Directory</h3>
                     </div>
 
                     {% if farmers %}
@@ -156,7 +156,7 @@
                         </div>
                     {% else %}
                         <div class="empty-state">
-                            <p>No farmers associated with this entity for Dry Season.</p>
+                            <p>No farmers associated with this entity for Wet Season.</p>
                         </div>
                     {% endif %}
                 </section>
