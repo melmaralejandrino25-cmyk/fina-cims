@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dry Season Municipalities - CIMS V10</title>
+    <title>Wet 2027 Season Municipalities - CIMS V10</title>
 
     <!-- External Theme CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/cims-theme.css', v='10') }}">
@@ -21,17 +21,17 @@
             <!-- Top Header & Navigation -->
             <div class="topbar flex-between align-center pb-3">
                 <div class="title flex-align gap-3">
-                    <div class="badge" aria-hidden="true">☀️</div>
+                    <div class="badge" aria-hidden="true">☔</div>
                     <div>
-                        <h2 class="m-0 text-xl font-bold">Dry Season Municipalities</h2>
-                        <p class="text-muted text-xs m-0">Manage dry season registered municipalities and records</p>
+                        <h2 class="m-0 text-xl font-bold">Wet Season Municipalities</h2>
+                        <p class="text-muted text-xs m-0">Manage Wet 2027 season registered municipalities and records</p>
                     </div>
                 </div>
 
                 <div class="top-buttons flex-align gap-2">
                     <a href="/" class="btn btn-secondary">🏠 Dashboard</a>
                     <a href="javascript:history.back()" class="btn btn-secondary">⬅ Back</a>
-                    <!-- Updated route for Dry Season -->
+                    <!-- Updated route for Wet Season -->
                     <a href="{{ url_for('dry_municipality.add_municipality') }}" class="btn btn-primary">
                         ➕ Add Municipality
                     </a>
@@ -50,7 +50,7 @@
                         </div>
 
                         <div class="card-actions flex-align gap-2 pt-2">
-                            <!-- Updated routes for Dry Season -->
+                            <!-- Updated routes for Wet 2027 Season -->
                             <a class="btn btn-primary flex-grow text-center"
                                href="{{ url_for('dry_municipality.municipality_detail', muni_id=muni['id']) }}">
                                 📂 Open
@@ -72,7 +72,7 @@
                 </div>
             {% else %}
                 <div class="card p-5 text-center">
-                    <h3 class="text-muted font-bold m-0">🚫 No Dry Season municipalities found.</h3>
+                    <h3 class="text-muted font-bold m-0">🚫 No Wet 2027 Season municipalities found.</h3>
                     <p class="text-muted text-xs mt-1">Click "Add Municipality" above to create your first entry.</p>
                 </div>
             {% endif %}
