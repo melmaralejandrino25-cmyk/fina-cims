@@ -1,19 +1,8 @@
 from flask import Blueprint, render_template, request, redirect, url_for
-import sqlite3
 import pandas as pd
+from database import get_db
 
 farmer_bp = Blueprint("farmer", __name__)
-
-DB = "database.db"
-
-
-# =========================
-# DB CONNECTION
-# =========================
-def get_db():
-    conn = sqlite3.connect(DB)
-    conn.row_factory = sqlite3.Row
-    return conn
 
 
 # =========================
@@ -82,7 +71,7 @@ def add_farmer(assoc_id):
 
     data = request.form
 
-    conn = sqlite3.connect(DB)
+    conn = get_db()
     c = conn.cursor()
 
     c.execute("""
@@ -220,7 +209,7 @@ def upload_excel(assoc_id):
 
     df.columns = df.columns.str.strip().str.lower()
 
-    conn = sqlite3.connect(DB)
+    conn = get_db()
     c = conn.cursor()
 
     inserted = 0

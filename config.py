@@ -20,6 +20,7 @@ SECRET_KEY = os.environ.get(
 # Database
 # ==========================
 DATABASE = os.path.join(BASE_DIR, "database.db")
+DATABASE_URL = os.environ.get("DATABASE_URL", "").strip()
 
 # ==========================
 # Folders

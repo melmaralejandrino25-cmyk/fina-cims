@@ -1,10 +1,9 @@
 from flask import Blueprint, render_template, request, redirect, url_for, Response
-import sqlite3
 import pandas as pd
 import io
+from database import get_db
 
 association_bp = Blueprint("association", __name__)
-DB = "database.db"
 
 
 # =========================
@@ -13,8 +12,7 @@ DB = "database.db"
 @association_bp.route("/export/<int:assoc_id>")
 def export_farmers(assoc_id):
 
-    conn = sqlite3.connect(DB)
-    conn.row_factory = sqlite3.Row
+    conn = get_db()
     c = conn.cursor()
 
     association = c.execute("""
@@ -74,8 +72,7 @@ def export_farmers(assoc_id):
 @association_bp.route("/<int:muni_id>")
 def view_associations(muni_id):
 
-    conn = sqlite3.connect(DB)
-    conn.row_factory = sqlite3.Row
+    conn = get_db()
     c = conn.cursor()
 
     muni = c.execute("""
@@ -111,7 +108,7 @@ def add_association(muni_id):
     if not name:
         return "Missing name", 400
 
-    conn = sqlite3.connect(DB)
+    conn = get_db()
     c = conn.cursor()
 
     c.execute("""
@@ -131,7 +128,7 @@ def add_association(muni_id):
 @association_bp.route("/delete/<int:id>/<int:muni_id>")
 def delete_association(id, muni_id):
 
-    conn = sqlite3.connect(DB)
+    conn = get_db()
     c = conn.cursor()
 
     # delete farmers first

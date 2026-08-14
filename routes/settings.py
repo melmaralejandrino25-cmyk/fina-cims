@@ -18,7 +18,7 @@ from flask import (
 import pandas as pd
 from werkzeug.utils import secure_filename
 
-from database import DB_PATH, get_db
+from database import DB_PATH, get_db, is_postgres
 
 settings_bp = Blueprint("settings", __name__)
 
@@ -40,7 +40,7 @@ TARGET_TABLES = [
 # ==========================
 @settings_bp.route("/settings")
 def settings():
-    db_size = round(os.path.getsize(DB_PATH) / 1024 / 1024, 2) if os.path.exists(DB_PATH) else 0
+    db_size = 0 if is_postgres() else round(os.path.getsize(DB_PATH) / 1024 / 1024, 2) if os.path.exists(DB_PATH) else 0
 
     os.makedirs(BACKUP_FOLDER, exist_ok=True)
     backup_files = glob.glob(os.path.join(BACKUP_FOLDER, "*.db"))
@@ -73,6 +73,10 @@ def settings():
 # ==========================
 @settings_bp.route("/settings/backup")
 def backup_database():
+    if is_postgres():
+        flash("SQLite .db backup is disabled when using PostgreSQL. Use Render/PostgreSQL backups instead.", "warning")
+        return redirect(url_for("settings.settings"))
+
     try:
         os.makedirs(BACKUP_FOLDER, exist_ok=True)
         now = datetime.now(MANILA)
@@ -124,6 +128,10 @@ def delete_backup(filename):
 # ==========================
 @settings_bp.route("/settings/restore/<filename>")
 def restore_saved_backup(filename):
+    if is_postgres():
+        flash("SQLite .db restore is disabled when using PostgreSQL. Use the migration script for SQLite imports.", "warning")
+        return redirect(url_for("settings.settings"))
+
     filename = secure_filename(filename)
     backup_path = os.path.join(BACKUP_FOLDER, filename)
 
@@ -151,6 +159,10 @@ def restore_saved_backup(filename):
 # ==========================
 @settings_bp.route("/settings/restore", methods=["POST"])
 def restore_database():
+    if is_postgres():
+        flash("SQLite .db restore is disabled when using PostgreSQL. Use the migration script for SQLite imports.", "warning")
+        return redirect(url_for("settings.settings"))
+
     file = request.files.get("backup")
 
     if not file or file.filename == "":
@@ -196,7 +208,8 @@ def export_database():
     try:
         with pd.ExcelWriter(filename, engine="openpyxl") as writer:
             for table in TARGET_TABLES:
-                df = pd.read_sql_query(f"SELECT * FROM {table}", conn)
+                source_conn = conn.conn if is_postgres() else conn
+                df = pd.read_sql_query(f"SELECT * FROM {table}", source_conn)
                 df.to_excel(writer, sheet_name=table[:31], index=False)
 
         return send_file(filename, as_attachment=True)
@@ -210,6 +223,10 @@ def export_database():
 # ==========================
 @settings_bp.route("/settings/import", methods=["POST"])
 def import_database():
+    if is_postgres():
+        flash("Excel database replace-import is disabled for PostgreSQL to protect table IDs and foreign keys.", "warning")
+        return redirect(url_for("settings.settings"))
+
     file = request.files.get("excel")
 
     if not file or file.filename == "":
@@ -227,10 +244,11 @@ def import_database():
     try:
         file.save(temp_file)
         conn = get_db()
+        source_conn = conn.conn if is_postgres() else conn
 
         for table in TARGET_TABLES:
             df = pd.read_excel(temp_file, sheet_name=table)
-            df.to_sql(table, conn, if_exists="replace", index=False)
+            df.to_sql(table, source_conn, if_exists="replace", index=False)
 
         flash("Excel imported successfully!", "success")
     except Exception as e:

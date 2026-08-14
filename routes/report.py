@@ -33,18 +33,34 @@ def report():
 
     if season in ["all", "wet"]:
         base_queries.append("""
-            SELECT 'Wet' AS season, id, farmer_name, municipality, association, 
-                   area_hectares, estimated_yield_tons, status 
-            FROM wet_farmers
-            WHERE 1=1
+            SELECT
+                'Wet' AS season,
+                f.id,
+                TRIM(COALESCE(f.last_name, '') || ', ' || COALESCE(f.first_name, '') || ' ' || COALESCE(f.middle_name, '')) AS farmer_name,
+                m.name AS municipality,
+                a.name AS association,
+                COALESCE(f.area, 0) AS area_hectares,
+                COALESCE(f.sacks * f.kg, 0) / 1000.0 AS estimated_yield_tons,
+                'Active' AS status
+            FROM wet_farmers f
+            JOIN wet_associations a ON f.association_id = a.id
+            JOIN wet_municipalities m ON a.municipality_id = m.id
         """)
     
     if season in ["all", "dry"]:
         base_queries.append("""
-            SELECT 'Dry' AS season, id, farmer_name, municipality, association, 
-                   area_hectares, estimated_yield_tons, status 
-            FROM dry_farmers
-            WHERE 1=1
+            SELECT
+                'Dry' AS season,
+                f.id,
+                TRIM(COALESCE(f.last_name, '') || ', ' || COALESCE(f.first_name, '') || ' ' || COALESCE(f.middle_name, '')) AS farmer_name,
+                m.name AS municipality,
+                a.name AS association,
+                COALESCE(f.area, 0) AS area_hectares,
+                COALESCE(f.sacks * f.kg, 0) / 1000.0 AS estimated_yield_tons,
+                'Active' AS status
+            FROM dry_farmers f
+            JOIN dry_associations a ON f.association_id = a.id
+            JOIN dry_municipalities m ON a.municipality_id = m.id
         """)
 
     # Combine queries using UNION ALL
@@ -99,9 +115,9 @@ def report():
     # Fetch Municipalities list for Filter Dropdown
     muni_sql = """
         SELECT DISTINCT name FROM (
-            SELECT municipality AS name FROM wet_farmers
+            SELECT name FROM wet_municipalities
             UNION
-            SELECT municipality AS name FROM dry_farmers
+            SELECT name FROM dry_municipalities
         ) WHERE name IS NOT NULL AND name != '' ORDER BY name ASC
     """
     municipalities_list = [row["name"] for row in db.execute(muni_sql).fetchall()]

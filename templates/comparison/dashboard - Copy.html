@@ -299,8 +299,8 @@
 
             <nav class="nav">
                 <a href="/"><span class="ico">⌂</span> Dashboard</a>
-                <a href="/wet2026/municipality/"><span class="ico">☔</span> Wet Season 2026</a>
-                <a href="/wet2027/municipality/"><span class="ico">☔</span> Wet Season 2027</a>
+                <a href="/wet/municipality/"><span class="ico">☔</span> Wet Season 2026</a>
+                <a href="/dry/municipality/"><span class="ico">☀️</span> Dry Season 2027</a>
                 <a href="/comparison" class="active"><span class="ico">⇄</span> Comparison</a>
                 <a href="#"><span class="ico">▤</span> Reports</a>
                 <a href="/settings"><span class="ico">⚙</span> Settings</a>
@@ -326,7 +326,7 @@
                 <header class="topbar">
                     <div class="title">
                         <h2>COMPARISON DASHBOARD</h2>
-                        <p>Wet Season 2026 vs Wet Season 2027</p>
+                        <p>Wet Season 2026 vs Dry Season 2027</p>
                     </div>
                     <div class="updated">
                         Last Updated:
@@ -340,7 +340,7 @@
                 <section class="panel">
                     <div class="panel-title">
                         <h3>📊 MUNICIPALITY COMPARISON</h3>
-                        <span>Wet 2026 vs Wet 2027</span>
+                        <span>Wet 2026 vs Dry 2027</span>
                     </div>
 
                     <div class="table-wrap">
@@ -358,15 +358,15 @@
                                 </tr>
                                 <tr>
                                     <th class="group-divider">2026 (Wet)</th>
-                                    <th>2027 (Wet)</th>
+                                    <th>2027 (Dry)</th>
                                     <th class="group-divider">2026 (Wet)</th>
-                                    <th>2027 (Wet)</th>
+                                    <th>2027 (Dry)</th>
                                     <th class="group-divider">2026 (Wet)</th>
-                                    <th>2027 (Wet)</th>
+                                    <th>2027 (Dry)</th>
                                     <th class="group-divider">2026 (Wet)</th>
-                                    <th>2027 (Wet)</th>
+                                    <th>2027 (Dry)</th>
                                     <th class="group-divider">2026 (Wet)</th>
-                                    <th>2027 (Wet)</th>
+                                    <th>2027 (Dry)</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -376,34 +376,34 @@
                                     <td style="text-align: left; font-weight: 600;">{{ row.municipality }}</td>
                                     
                                     <!-- Associations -->
-                                    <td class="group-divider">{{ "%d"|format(row.wet2026_assoc or 0) }}</td>
-                                    <td>{{ "%d"|format(row.wet2027_assoc or 0) }}</td>
+                                    <td class="group-divider">{{ "%d"|format(row.wet_assoc or 0) }}</td>
+                                    <td>{{ "%d"|format(row.dry_assoc or 0) }}</td>
 
                                     <!-- Farmers -->
-                                    <td class="group-divider">{{ "%d"|format(row.wet2026_farmers or 0) }}</td>
-                                    <td>{{ "%d"|format(row.wet2027_farmers or 0) }}</td>
+                                    <td class="group-divider">{{ "%d"|format(row.wet_farmers or 0) }}</td>
+                                    <td>{{ "%d"|format(row.dry_farmers or 0) }}</td>
 
                                     <!-- Area -->
-                                    <td class="group-divider">{{ "%.2f"|format(row.wet2026_area or 0) }}</td>
-                                    <td>{{ "%.2f"|format(row.wet2027_area or 0) }}</td>
+                                    <td class="group-divider">{{ "%.2f"|format(row.wet_area or 0) }}</td>
+                                    <td>{{ "%.2f"|format(row.dry_area or 0) }}</td>
 
                                     <!-- Production -->
-                                    <td class="group-divider">{{ "%.2f"|format(row.wet2026_mt or 0) }}</td>
-                                    <td>{{ "%.2f"|format(row.wet2027_mt or 0) }}</td>
+                                    <td class="group-divider">{{ "%.2f"|format(row.wet_mt or 0) }}</td>
+                                    <td>{{ "%.2f"|format(row.dry_mt or 0) }}</td>
 
                                     <!-- Yield (Wet 2026) -->
                                     <td class="group-divider">
-                                        {% if row.wet2026_area and row.wet2026_area > 0 %}
-                                            {{ "%.2f"|format((row.wet2026_mt or 0) / row.wet2026_area) }}
+                                        {% if row.wet_area and row.wet_area > 0 %}
+                                            {{ "%.2f"|format((row.wet_mt or 0) / row.wet_area) }}
                                         {% else %}
                                             0.00
                                         {% endif %}
                                     </td>
 
-                                    <!-- Yield (Wet 2027) -->
+                                    <!-- Yield (Dry 2027) -->
                                     <td>
-                                        {% if row.wet2027_area and row.wet2027_area > 0 %}
-                                            {{ "%.2f"|format((row.wet2027_mt or 0) / row.wet2027_area) }}
+                                        {% if row.dry_area and row.dry_area > 0 %}
+                                            {{ "%.2f"|format((row.dry_mt or 0) / row.dry_area) }}
                                         {% else %}
                                             0.00
                                         {% endif %}
@@ -440,7 +440,7 @@
                 <section class="panel">
                     <div class="panel-title">
                         <h3>🏢 ASSOCIATION COMPARISON</h3>
-                        <span>Wet Season 2026 vs Wet Season 2027</span>
+                        <span>Wet Season 2026 vs Dry Season 2027</span>
                     </div>
 
                     {% for municipality in association_rows | groupby("municipality") %}
@@ -454,38 +454,38 @@
                                 <tr>
                                     <th rowspan="2">Municipality</th>
                                     <th rowspan="2">Association (Wet 2026)</th>
-                                    <th rowspan="2">Association (Wet 2027)</th>
+                                    <th rowspan="2">Association (Dry 2027)</th>
                                     <th colspan="2" class="group-divider">Area (ha)</th>
                                     <th colspan="2" class="group-divider">Ave MT/ha</th>
                                     <th colspan="2" class="group-divider">Number of Farmers</th>
                                 </tr>
                                 <tr>
                                     <th class="group-divider">2026 (Wet)</th>
-                                    <th>2027 (Wet)</th>
+                                    <th>2027 (Dry)</th>
                                     <th class="group-divider">2026 (Wet)</th>
-                                    <th>2027 (Wet)</th>
+                                    <th>2027 (Dry)</th>
                                     <th class="group-divider">2026 (Wet)</th>
-                                    <th>2027 (Wet)</th>
+                                    <th>2027 (Dry)</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for row in municipality.list %}
                                 <tr>
                                     <td style="text-align: left;">{{ row.municipality }}</td>
-                                    <td style="text-align: left;">{{ row.wet2026_association or "-" }}</td>
-                                    <td style="text-align: left;">{{ row.wet2027_association or "-" }}</td>
+                                    <td style="text-align: left;">{{ row.wet_association or "-" }}</td>
+                                    <td style="text-align: left;">{{ row.dry_association or "-" }}</td>
                                     
                                     <!-- Area -->
-                                    <td class="group-divider">{{ "%.2f"|format(row.wet2026_area or 0) }}</td>
-                                    <td>{{ "%.2f"|format(row.wet2027_area or 0) }}</td>
+                                    <td class="group-divider">{{ "%.2f"|format(row.wet_area or 0) }}</td>
+                                    <td>{{ "%.2f"|format(row.dry_area or 0) }}</td>
 
                                     <!-- Yield -->
-                                    <td class="group-divider">{{ "%.2f"|format(row.wet2026_yield or 0) }}</td>
-                                    <td>{{ "%.2f"|format(row.wet2027_yield or 0) }}</td>
+                                    <td class="group-divider">{{ "%.2f"|format(row.wet_yield or 0) }}</td>
+                                    <td>{{ "%.2f"|format(row.dry_yield or 0) }}</td>
 
                                     <!-- Farmers -->
-                                    <td class="group-divider">{{ "%d"|format(row.wet2026_farmers or 0) }}</td>
-                                    <td>{{ "%d"|format(row.wet2027_farmers or 0) }}</td>
+                                    <td class="group-divider">{{ "%d"|format(row.wet_farmers or 0) }}</td>
+                                    <td>{{ "%d"|format(row.dry_farmers or 0) }}</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>

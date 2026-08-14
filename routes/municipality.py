@@ -1,9 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for
-import sqlite3
+from database import get_db
 
 municipality_bp = Blueprint("municipality", __name__)
-
-DB = "database.db"
 
 
 # ===========================
@@ -12,8 +10,7 @@ DB = "database.db"
 @municipality_bp.route("/")
 def list_municipalities():
 
-    conn = sqlite3.connect(DB)
-    conn.row_factory = sqlite3.Row
+    conn = get_db()
     c = conn.cursor()
 
     municipalities = c.execute(
@@ -38,7 +35,7 @@ def add_municipality():
 
         name = request.form["name"]
 
-        conn = sqlite3.connect(DB)
+        conn = get_db()
         c = conn.cursor()
 
         c.execute(
@@ -60,8 +57,7 @@ def add_municipality():
 @municipality_bp.route("/<int:muni_id>")
 def municipality_detail(muni_id):
 
-    conn = sqlite3.connect(DB)
-    conn.row_factory = sqlite3.Row
+    conn = get_db()
     c = conn.cursor()
 
     muni = c.execute(
@@ -148,8 +144,7 @@ def municipality_detail(muni_id):
 @municipality_bp.route("/edit/<int:muni_id>", methods=["GET", "POST"])
 def edit_municipality(muni_id):
 
-    conn = sqlite3.connect(DB)
-    conn.row_factory = sqlite3.Row
+    conn = get_db()
     c = conn.cursor()
 
     if request.method == "POST":
@@ -182,7 +177,7 @@ def edit_municipality(muni_id):
 @municipality_bp.route("/delete/<int:muni_id>")
 def delete_municipality(muni_id):
 
-    conn = sqlite3.connect(DB)
+    conn = get_db()
     c = conn.cursor()
 
     c.execute(
